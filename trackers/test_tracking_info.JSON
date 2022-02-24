@@ -1,0 +1,29 @@
+{
+  "tracking_codes": {
+    "pre_transit": "EZ1000000001",
+    "in_transit": "EZ2000000002",
+    "out_for_delivery": "EZ3000000003",
+    "delivered": "EZ4000000004",
+    "return_to_sender": "EZ5000000005",
+    "failure": "EZ6000000006",
+    "unknown": "EZ7000000007"
+  },
+  "carriers": [
+    {
+      "carrier": "APC",
+      "carrier_str": "APC"
+    },
+    {
+      "carrier": "Asendia USA",
+      "carrier_str": "AsendiaUsa"
+    },
+    {
+      "carrier": "Australia Post",
+      "carrier_str": "AustraliaPost"
+    },
+    {
+      "carrier": "AxlehireV3",
+      "carrier_str": "AxlehireV3"
+    }
+  ]
+}
