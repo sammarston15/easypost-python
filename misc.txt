@@ -1,11 +1,16 @@
-2017053744205426,
-2017053744207420,
-2017053744333426,
-2017053744334423,
-2017053744535424,
-2017053744695425,
-2017053744921425,
-2017053745015420,
-2017053745240426,
-2017053745461425,
-2017053745640424
+curl -X POST https://api.easypost.com/v2/carrier_accounts/open \
+-u <YOUR_PRODUCTION_API_KEY>: \
+-d 'carrier_account[type]=UpsDapAccount' \
+-d 'carrier_account[description]=UPS DAP Account' \
+-d 'carrier_account[name]=NAME' \
+-d 'carrier_account[title]=TITLE' \
+-d 'carrier_account[company]=COMPANY' \
+-d 'carrier_account[street1]=STREET1' \
+-d 'carrier_account[street2]=STREET2' \
+-d 'carrier_account[city]=CITY' \
+-d 'carrier_account[state]=STATE' \
+-d 'carrier_account[postal_code]=ZIP' \
+-d 'carrier_account[country]=COUNTRY' \
+-d 'carrier_account[email]=EMAIL' \
+-d 'carrier_account[phone]=PHONE' \
+-d 'carrier_account[website]=website'

@@ -11,9 +11,7 @@ prod_key = os.getenv('PROD_KEY')
 easypost.api_key = prod_key
 
 try:
-    child_user = easypost.User.create(
-      name = 'to be removed'
-    )
-    print(child_user)
+    user = easypost.User.retrieve("user_73dc10464465457b9a61c19092fa9108")
+    user.delete()
 except easypost.Error as e:
     print(e.http_body)

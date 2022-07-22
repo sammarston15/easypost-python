@@ -1,16 +1,12 @@
 import easypost
 import os
-from dotenv import load_dotenv
 import json
-import dad_tool
-
-""" LOAD ENVIRONMENT VARIABLES """
-load_dotenv()
+# import dad_tool
 
 
 """ LOAD TEST AND PROD API KEY """
-test_key = os.getenv('test_key')
-prod_key = os.getenv('prod_key')
+test_key = os.getenv('TEST_KEY')
+prod_key = os.getenv('PROD_KEY')
 
 
 """ SET TEST OR PROD API KEY """
@@ -20,6 +16,7 @@ easypost.api_key = test_key
 
 """ open misc.JSON file """
 with open((os.path.join(os.getcwd(),'misc.JSON')), 'r') as f:
+  # have python convert the json into a Python Dictionary
   ship = json.load(f)
 
   # DELETE UNNESSESSARY INFORMATION
@@ -101,31 +98,40 @@ with open((os.path.join(os.getcwd(),'misc.JSON')), 'r') as f:
       del customs_item['created_at']
       del customs_item['updated_at']
     
-
+  # converts python dictionary into json
   # print(json.dumps(ship['to_address'], ))
 
   """ any additional adjustments """
-  # ship['options']['incoterm'] = "DDU"
-  # ship['options']['label_format'] = "PDF"
+  # ship['options']['dropoff_max_datetime'] = "2022-03-27 10:30:00"
+  # ship['options']['label_size'] = "7x3"
   # ship['options']['label_date'] = "2022-02-28"
-  # ship['to_address']['residential'] = False
+  # ship['options']['incoterm'] = "DDU"
+  # ship['to_address']['company'] = None
   # ship['from_address']['company'] = "EasyPost"
   # address1 = dad_tool.random_address('US_UT')
+  # ship['parcel']['predefined_package'] = "Letter"
 
   """ Set shipment object """
   shipment = easypost.Shipment.create(
     to_address=ship['to_address'],
     from_address=ship['from_address'],
-    # from_address=address1,
     parcel=ship['parcel'],
     customs_info=ship['customs_info'],
     options=ship['options'],
     is_return=ship['is_return'],
-    carrier_accounts=[os.getenv('fedex')]
+    carrier_accounts=[os.getenv('USPS')]
   )
 
 """ Buy Shipment """
+# shipment.buy(rate=shipment.lowest_rate(carriers=['USPS'], services=['First']))
 shipment.buy(rate=shipment.lowest_rate())
+
 
 """ Print shipment """
 print(shipment)
+
+# for rate in shipment['rates']:
+#   print({
+#     "service": rate['service'],
+#     "rate": rate['rate']
+#   })

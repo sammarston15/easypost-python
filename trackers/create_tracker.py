@@ -7,12 +7,7 @@ test_tracking_info.JSON updated as of 8/13/2021
 
 import easypost
 import os
-from dotenv import load_dotenv
 import json
-
-
-""" LOAD ENVIRONMENT VARIABLES """
-load_dotenv()
 
 
 """ LOAD TEST AND PROD API KEY """
@@ -29,9 +24,9 @@ with open(os.path.join(os.getcwd(), 'trackers/test_tracking_info.JSON'), 'r') as
   tracking_info = json.load(f)
 
   tracker = easypost.Tracker.create(
-    # tracking_code=tracking_info['tracking_codes']['in_transit'],
-    tracking_code="RR888018986DE",
-    carrier="DeutschePostUK"
+    carrier=tracking_info['carriers'][2]['carrier_str'],
+    tracking_code="AXL9530636",
+    # carrier="FedEx"
   )
 
   print(tracker)

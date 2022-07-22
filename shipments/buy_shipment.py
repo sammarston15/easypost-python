@@ -1,9 +1,6 @@
 import easypost
 import os
-from dotenv import load_dotenv
 
-# LOAD ENVIRONMENT VARIABLES
-load_dotenv()
 
 # SET TEST AND PROD API KEY
 test_key = os.getenv('test_key')
@@ -17,7 +14,7 @@ easypost.api_key = test_key
 ######################################
 
 """ Retrieve the shipment """
-shipment = easypost.Shipment.retrieve("shp_140b741cee2649dea85bf3d6a213ae7b")
+shipment = easypost.Shipment.retrieve("shp_b1888c690ef34f3fa31c0e6096b95dd4")
 
 
 """ buy lowest rate | this example is from https://www.easypost.com/docs/api#buy-a-shipment """
@@ -31,6 +28,6 @@ shipment = easypost.Shipment.retrieve("shp_140b741cee2649dea85bf3d6a213ae7b")
 
 
 """ buy a specific rate via rate ID | this example also comes from https://www.easypost.com/getting-started/python#buy-shipment-python-curl-ruby-python-php-java-c-sharp-node-js """
-shipment.buy(rate={'id': 'rate_a1d3d9c1ce4643b69356abbbf90026cc'})
+shipment.buy(rate={'id': 'rate_62d2135118f3445aba911d1ff0d8e1ba'})
 print(shipment)
 

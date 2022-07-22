@@ -1,30 +1,28 @@
 import easypost
 import os
+from dotenv import load_dotenv
 import dad_tool
 
+# LOAD ENVIRONMENT VARIABLES
+load_dotenv()
 
 # SET TEST AND PROD API KEY
 test_key = os.getenv('test_key')
 prod_key = os.getenv('prod_key')
-rick = os.getenv('RICK_CARTER_PROD_KEY')
-
 
 
 # USE TEST OR PROD API KEY
-# easypost.api_key = test_key
+easypost.api_key = test_key
 # easypost.api_key = prod_key
-easypost.api_key = rick
-
 
 
 """ Create DAD addresses """
-unitedstates1 = dad_tool.random_address('US_UT')
-unitedstates2 = dad_tool.random_address('US_AZ')
+unitedstates1 = dad_tool.random_address('US_AZ')
+unitedstates2 = dad_tool.random_address('US_CA')
 unitedkingdom1 = dad_tool.random_address('EU_UK')
 unitedkingdom2 = dad_tool.random_address('EU_UK')
 canada1 = dad_tool.random_address('CA_BC')
 canada2 = dad_tool.random_address('CA_BC')
-
 
 
 """ Create to_address """
@@ -44,7 +42,7 @@ except easypost.Error as e:
     print(e.http_body)
 
 
-""" Create from_address """
+""" Create from_address at the California Parcll Hub """
 try:
     from_address = easypost.Address.create(
         street1=unitedstates2['street1'],
@@ -72,15 +70,11 @@ except easypost.Error as e:
   print(e.http_body)
 
 options = {
-  "print_custom_1": "example message",
-  # "special_rates_eligibility": "USPS.MEDIAMAIL",
-  # "delivery_confirmation": "ADULT_SIGNATURE"
+  "print_custom_1": "print_custom_1",
+  # "special_rates_eligibility": "USPS.MEDIAMAIL"
 }
 
 # customs_info = easypost.CustomsInfo.create(...)
-
-carrier = [os.getenv('parcel_force')]
-print(carrier)
 
 """ Create shipment """
 shipment = easypost.Shipment.create(
@@ -89,9 +83,8 @@ shipment = easypost.Shipment.create(
   parcel=parcel,
   options=options,
   # customs_info=customs_info,
-  # carrier_accounts=[os.getenv('parcelforce')],
+  carrier_accounts = [os.getenv('parcll')],
   # service="MediaMail"
-  reference=to_address.street1
 )
 
 """ Buy shipment """
