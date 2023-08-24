@@ -13,7 +13,7 @@
 
 
 import easypost
-easypost.api_key = "EZAK73dc10464465457b9a61c19092fa9108wYNFicH6RtoaVx8hdfqtJg"
+easypost.api_key = "EZAK7************************"
 
 webhook = easypost.Webhook.create(url="https://easypost-test.free.beeceptor.com")
 print(webhook)
