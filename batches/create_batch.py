@@ -1,79 +1,87 @@
-import easypost
-import os
-from dotenv import load_dotenv
-import json
+import easypost # easypost python client library
+import os # allows for access of environment variables in .env file
+import json # allows for reading of JSON from misc.JSON file
+from prettytable import PrettyTable # allows for formatted table printing in the console
+from uuid import uuid4 # use this to generate a random and unique identifier
+import dad_tool # Justin Hammond's Dummy Address Data
+# import random
 
 
-""" LOAD ENVIRONMENT VARIABLES """
-load_dotenv()
+""" SET TEST AND PROD API KEY """
+test_key = os.getenv('TEST_KEY')
+personal_test_key = os.getenv('PERSONAL_TEST_KEY')
+prod_key = os.getenv('PROD_KEY')
 
 
-""" LOAD TEST AND PROD API KEY """
-test_key = os.getenv('test_key')
-prod_key = os.getenv('prod_key')
+""" set client with TEST OR PROD api key """
+# client = easypost.EasyPostClient(personal_test_key)
+client = easypost.EasyPostClient(test_key)
+# client = easypost.EasyPostClient(prod_key)
 
 
-""" SET TEST OR PROD API KEY """
-easypost.api_key = test_key
-# easypost.api_key = prod_key
+""" create unique reference ID"""
+reference_id = str(uuid4())[:12]
 
 
-batch = easypost.Batch.create(shipments=[
-  {
-    "from_address": {
-      "street1": "417 MONTGOMERY ST",
-      "street2": "FLOOR 5",
-      "city": "SAN FRANCISCO",
-      "state": "CA",
-      "country": "US",
-      "zip": "94104"
-    },
-    "to_address": {
-      "street1": "10231 Ridge Road",
-      "street2": "",
-      "city": "North Royalton",
-      "state": "OH",
-      "country": "US",
-      "zip": "44133",
-      "name": "School of Fine Art"
-    },
-    "parcel": {
-      "length": "1.0",
-      "width": "1.0",
-      "height": "1.0",
-      "weight": "1.0"
-    },
-    "reference": "1",
-    "carrier": "USPS",
-    "service": "Express"
-  }, 
-  {
-    "from_address": {
-      "street1": "417 MONTGOMERY ST",
-      "street2": "FLOOR 5",
-      "city": "SAN FRANCISCO",
-      "state": "CA",
-      "country": "US",
-      "zip": "94104"
-    },
-    "to_address": {
-      "street1": "10231 Ridge Road",
-      "street2": "",
-      "city": "North Royalton",
-      "state": "OH",
-      "country": "US",
-      "zip": "44133",
-      "name": "School of Fine Art"
-    },
-    "parcel": {
-      "length": "1.0",
-      "width": "1.0",
-      "height": "1.0",
-      "weight": "1.0"
-    },
-    "reference": "1",
-    "carrier": "USPS",
-    "service": "Express"
-  },
-])
-print(batch)
+""" Create batch with existing shipments """
+try:
+  batch = client.batch.create(
+    shipments=[
+        {"id": "shp_..."},
+        {"id": "shp_..."},
+    ],
+  )
+
+  print(batch)
+
+except easypost.errors.api.api_error.ApiError as e:
+  print("   ")
+  print(e.http_body)
+  print("   ")
+
+
+""" Create batch with blanket shipments """
+try:
+  batch = client.batch.create(
+    shipments=[
+        {
+        "to_address": {
+          "name": "Dr. Steve Brule",
+          "street1": "179 N Harbor Dr",
+          "city": "Redondo Beach",
+          "state": "CA",
+          "zip": "90277",
+          "country": "US",
+          "phone": "8573875756",
+          "email": "dr_steve_brule@gmail.com"
+        },
+        "from_address": {
+          "name": "EasyPost",
+          "street1": "417 Montgomery Street",
+          "street2": "5th Floor",
+          "city": "San Francisco",
+          "state": "CA",
+          "zip": "94104",
+          "country": "US",
+          "phone": "4153334445",
+          "email": "support@easypost.com"
+        },
+        "parcel": {
+          "length": "20.2",
+          "width": "10.9",
+          "height": "5",
+          "weight": "65.9"
+        },
+        "carrier": "USPS",
+        "service": "ParcelSelect"
+      }
+    ],
+  )
+
+  print(batch)
+
+except easypost.errors.api.api_error.ApiError as e:
+  print("   ")
+  print(e.http_body)
+  print("   ")
+

@@ -1,40 +1,39 @@
-import easypost
-import os
-from dotenv import load_dotenv
-import json
-import dad_tool
-
-""" LOAD ENVIRONMENT VARIABLES """
-load_dotenv()
-
-
-""" LOAD TEST AND PROD API KEY """
-test_key = os.getenv('test_key')
-prod_key = os.getenv('prod_key')
+import easypost # easypost python client library
+import os # allows for access of environment variables in .env file
+import json # allows for reading of JSON from misc.JSON file
+from prettytable import PrettyTable # allows for formatted table printing in the console
+from uuid import uuid4 # use this to generate a random and unique identifier
+import dad_tool # Justin Hammond's Dummy Address Data
+# import random
 
 
-""" SET TEST OR PROD API KEY """
-easypost.api_key = test_key
-# easypost.api_key = prod_key
+""" SET TEST AND PROD API KEY """
+test_key = os.getenv('TEST_KEY')
+personal_test_key = os.getenv('PERSONAL_TEST_KEY')
+prod_key = os.getenv('PROD_KEY')
 
 
-""" retrieve address via EasyPost address ID """
-address = easypost.Address.retrieve('adr_fc692c2c8f5c11ec99baac1f6bc7b362')
-
-
-""" retrieve shipment """
-shipment = easypost.Shipment.retrieve('shp_574f618892964b339fe03e96f4c2e53d')
+""" set client with TEST OR PROD api key """
+# client = easypost.EasyPostClient(personal_test_key)
+client = easypost.EasyPostClient(test_key)
+# client = easypost.EasyPostClient(prod_key)
 
 
 """ create pickup """
-pickup = easypost.Pickup.create(
-  address=address,
-  shipment=shipment,
-  reference="my-first-pickup",
-  min_datetime="2022-02-18 12:00:00",
-  max_datetime="2022-02-18 16:00:00",
-  is_account_address=False,
-  instructions="Special pickup instructions"
-)
+try:
+  pickup = client.pickup.create(
+      address={"id": "adr_..."},
+      shipment={"id": "shp_..."},
+      reference=str(uuid4())[:12],
+      min_datetime="2022-10-01 10:30:00",
+      max_datetime="2022-10-02 10:30:00",
+      is_account_address=False,
+      instructions="Special pickup instructions",
+  )
 
-print(pickup)
+  print(pickup)
+
+except easypost.errors.api.api_error.ApiError as e:
+    print("   ")
+    print(e.http_body)
+    print("   ")

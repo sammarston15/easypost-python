@@ -19,11 +19,15 @@ client = easypost.EasyPostClient(test_key)
 # client = easypost.EasyPostClient(prod_key)
 
 
-""" create webhook """
+""" retrieve user """
 try:
-    webhook = client.webhook.create(url="example.com")
+    # Retrieve the authenticated user
+    user = client.user.retrieve_me()
 
-    print(webhook)
+    # Retrieve a child user
+    user = client.user.retrieve("user_...")
+
+    print(user)
 
 except easypost.errors.api.api_error.ApiError as e:
     print("   ")

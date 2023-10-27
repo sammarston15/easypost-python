@@ -19,11 +19,11 @@ client = easypost.EasyPostClient(test_key)
 # client = easypost.EasyPostClient(prod_key)
 
 
-""" create webhook """
+""" retrieve an order """
 try:
-    webhook = client.webhook.create(url="example.com")
+    order = client.order.retrieve("order_...")
 
-    print(webhook)
+    print(order)
 
 except easypost.errors.api.api_error.ApiError as e:
     print("   ")

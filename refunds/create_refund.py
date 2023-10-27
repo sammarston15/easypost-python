@@ -15,16 +15,19 @@ prod_key = os.getenv('PROD_KEY')
 
 """ set client with TEST OR PROD api key """
 # client = easypost.EasyPostClient(personal_test_key)
-client = easypost.EasyPostClient(test_key)
-# client = easypost.EasyPostClient(prod_key)
+# client = easypost.EasyPostClient(test_key)
+client = easypost.EasyPostClient(prod_key)
 
 
-""" create webhook """
+""" refund a list of tracking codes for a specific carrier """
 try:
-    webhook = client.webhook.create(url="example.com")
+    refunds = client.refund.create(
+        carrier="USPS",
+        tracking_codes=["EZ1000000001"],
+    )
 
-    print(webhook)
-
+    print(refunds)
+    
 except easypost.errors.api.api_error.ApiError as e:
     print("   ")
     print(e.http_body)

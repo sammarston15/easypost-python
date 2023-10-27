@@ -19,11 +19,11 @@ client = easypost.EasyPostClient(test_key)
 # client = easypost.EasyPostClient(prod_key)
 
 
-""" create webhook """
+""" retrieve an address """
 try:
-    webhook = client.webhook.create(url="example.com")
+    address = client.address.retrieve("adr_...")
 
-    print(webhook)
+    print(address)
 
 except easypost.errors.api.api_error.ApiError as e:
     print("   ")

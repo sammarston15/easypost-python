@@ -1,27 +1,37 @@
-import easypost
-import os
-from dotenv import load_dotenv
-import json
-import dad_tool
-
-""" LOAD ENVIRONMENT VARIABLES """
-load_dotenv()
-
-
-""" LOAD TEST AND PROD API KEY """
-test_key = os.getenv('test_key')
-prod_key = os.getenv('prod_key')
+import easypost # easypost python client library
+import os # allows for access of environment variables in .env file
+import json # allows for reading of JSON from misc.JSON file
+from prettytable import PrettyTable # allows for formatted table printing in the console
+from uuid import uuid4 # use this to generate a random and unique identifier
+import dad_tool # Justin Hammond's Dummy Address Data
+# import random
 
 
-""" SET TEST OR PROD API KEY """
-easypost.api_key = test_key
-# easypost.api_key = prod_key
+""" SET TEST AND PROD API KEY """
+test_key = os.getenv('TEST_KEY')
+personal_test_key = os.getenv('PERSONAL_TEST_KEY')
+prod_key = os.getenv('PROD_KEY')
 
 
-""" retrieve pickup via EasyPost pickup ID """
-pickup = easypost.Pickup.retrieve("pickup_5d30888ca4dd4481a0df47ed662f1e6a")
+""" set client with TEST OR PROD api key """
+# client = easypost.EasyPostClient(personal_test_key)
+client = easypost.EasyPostClient(test_key)
+# client = easypost.EasyPostClient(prod_key)
+
 
 """ buy pickup """
-pickup.buy(carrier="DHLExpress", service="ExpressPickup")
+try:
+    pickup = client.pickup.retrieve("pickup_...")
 
-print(pickup)
+    bought_pickup = client.pickup.buy(
+        pickup.id,
+        carrier="UPS",
+        service="Same-day Pickup",
+    )
+
+    print(bought_pickup)
+
+except easypost.errors.api.api_error.ApiError as e:
+    print("   ")
+    print(e.http_body)
+    print("   ")

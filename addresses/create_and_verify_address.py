@@ -1,51 +1,75 @@
-import easypost
-import os
-import json
-from dotenv import load_dotenv
-import dad_tool
+import easypost # easypost python client library
+import os # allows for access of environment variables in .env file
+import json # allows for reading of JSON from misc.JSON file
+from prettytable import PrettyTable # allows for formatted table printing in the console
+from uuid import uuid4 # use this to generate a random and unique identifier
+import dad_tool # Justin Hammond's Dummy Address Data
+# import random
 
 
-# LOAD ENVIRONMENT VARIABLES
-load_dotenv()
+""" SET TEST AND PROD API KEY """
+test_key = os.getenv('TEST_KEY')
+personal_test_key = os.getenv('PERSONAL_TEST_KEY')
+prod_key = os.getenv('PROD_KEY')
 
 
-# SET TEST AND PROD API KEY
-test_key = os.getenv('test_key')
-prod_key = os.getenv('prod_key')
+""" set client with TEST OR PROD api key """
+# client = easypost.EasyPostClient(personal_test_key)
+client = easypost.EasyPostClient(test_key)
+# client = easypost.EasyPostClient(prod_key)
 
 
-# USE TEST OR PROD API KEY
-easypost.api_key = test_key
-# easypost.api_key = prod_key
+""" Create DAD addresses """
+unitedstates1 = dad_tool.random_address('US_UT')
+unitedstates2 = dad_tool.random_address('US_AZ')
+unitedkingdom1 = dad_tool.random_address('EU_UK')
+unitedkingdom2 = dad_tool.random_address('EU_UK')
+canada1 = dad_tool.random_address('CA_BC')
+canada2 = dad_tool.random_address('CA_BC')
 
 
-address1 = dad_tool.random_address('US_UT')
+""" create address with verification """
+try:
+    address = client.address.create(
+        verify=["pickup"],
+        street1="13 Adeola Odeku Street",
+        street2="",
+        city="Lagos",
+        state="Lagos State",
+        zip="101241",
+        country="Nigeria",
+        company="John Enterprice",
+        name="John Doe",
+        phone="5555555555",
+        email="test@mail.com",
+        residential=False
+    )
+    print(address)
 
-# create address with verification
-# address = easypost.Address.create(
-#     verify=["delivery"],
-#     street1="Unit Pr6 Ik Business Park",
-#     street2="Philips Road",
-#     city="Blackburn",
-#     state="",
-#     zip="BB1 5FD",
-#     country="GB",
-#     company="EasyPost",
-#     phone="415-456-7890"
-# )
-# print(address)
+except easypost.errors.api.api_error.ApiError as e:
+    print("   ")
+    print(e.http_body)
+    print("   ")
+
 
 """ use dad tool to make new address"""
-address = easypost.Address.create(
-    verify=["delivery"],
-    street1=address1['street1'],
-    street2=address1['street2'],
-    city=address1['city'],
-    state=address1['state'],
-    zip=address1['zip'],
-    country=address1['country'],
-    company="EasyPost",
-    phone="415-456-7890"
-)
-print(address)
+# try:
+#     address = client.address.create(
+#         street1=unitedstates2['street1'],
+#         street2=unitedstates2['street2'],
+#         city=unitedstates2['city'],
+#         state=unitedstates2['state'],
+#         zip=unitedstates2['zip'],
+#         country=unitedstates2['country'],
+#         company="EasyPost",
+#         phone="415-456-7890",
+#         verify=["delivery"],
+#     )
+#     print(address)
+
+# except easypost.errors.api.api_error.ApiError as e:
+#     print("   ")
+#     print(e.http_body)
+#     print("   ")
+
 

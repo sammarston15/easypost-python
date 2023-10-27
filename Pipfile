@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 easypost = "*"
 dad-tool = "*"
+prettytable = "*"
+pandas = "*"
 
 [dev-packages]
-

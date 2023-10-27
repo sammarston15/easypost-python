@@ -1,59 +1,91 @@
-import easypost
-import os
-from dotenv import load_dotenv
-import json
-
-""" LOAD ENVIRONMENT VARIABLES """
-load_dotenv()
-
-
-""" LOAD TEST AND PROD API KEY """
-test_key = os.getenv('test_key')
-prod_key = os.getenv('prod_key')
+import easypost # easypost python client library
+import os # allows for access of environment variables in .env file
+import json # allows for reading of JSON from misc.JSON file
+from prettytable import PrettyTable # allows for formatted table printing in the console
+from uuid import uuid4 # use this to generate a random and unique identifier
+import dad_tool # Justin Hammond's Dummy Address Data
+# import random
 
 
-""" SET TEST OR PROD API KEY """
-easypost.api_key = test_key
-# easypost.api_key = prod_key 
+""" SET TEST AND PROD API KEY """
+test_key = os.getenv('TEST_KEY')
+personal_test_key = os.getenv('PERSONAL_TEST_KEY')
+prod_key = os.getenv('PROD_KEY')
 
 
-""" Create Payment log report """
-# payment_log_report = easypost.Report.create(
-#   start_date="2016-10-01",
-#   end_date="2016-10-31",
-#   type="payment_log"
-# )
-# print(payment_log_report)
+""" set client with TEST OR PROD api key """
+# client = easypost.EasyPostClient(personal_test_key)
+client = easypost.EasyPostClient(test_key)
+# client = easypost.EasyPostClient(prod_key)
 
-""" create refund report """
-# refund_report = easypost.Report.create(
-#   start_date="2016-10-01",
-#   end_date="2016-10-31",
-#   type="refund"
-# )
-# print(refund_report)
 
 """ create shipment report """
-shipment_report = easypost.Report.create(
-  start_date="2021-10-01",
-  end_date="2021-10-05",
-  type="shipment",
-  send_email=True
-)
-print(shipment_report)
+try:
+  report = client.report.create(
+      type="shipment",
+      start_date="2022-10-01",
+      end_date="2022-10-31",
+      include_children=False,
+      send_email=True
+  )
+
+  print(report)
+
+except easypost.errors.api.api_error.ApiError as e:
+  print("   ")
+  print(e.http_body)
+  print("   ")
+
 
 """ create shipment invoice report """
-# shipment_invoice_report = easypost.Report.create(
-#   start_date="2016-10-01",
-#   end_date="2016-10-31",
-#   type="shipment_invoice"
-# )
-# print(shipment_invoice_report)
+# try:
+#   report = client.report.create(
+#       type="shipment_invoice",
+#       start_date="2022-10-01",
+#       end_date="2022-10-31",
+#       include_children=False,
+#       send_email=True
+#   )
 
-"""create tracker report """
-# tracker_report = easypost.Report.create(
-#   start_date="2016-10-01",
-#   end_date="2016-10-31",
-#   type="tracker"
-# )
-# print(tracker_report)
+#   print(report)
+
+# except easypost.errors.api.api_error.ApiError as e:
+#   print("   ")
+#   print(e.http_body)
+#   print("   ")
+
+
+""" create refund report """
+# try:
+#   report = client.report.create(
+#       type="refund",
+#       start_date="2022-10-01",
+#       end_date="2022-10-31",
+#       include_children=False,
+#       send_email=True
+#   )
+
+#   print(report)
+
+# except easypost.errors.api.api_error.ApiError as e:
+#   print("   ")
+#   print(e.http_body)
+#   print("   ")
+
+
+""" create tracker report """
+# try:
+#   report = client.report.create(
+#       type="tracker",
+#       start_date="2022-10-01",
+#       end_date="2022-10-31",
+#       include_children=False,
+#       send_email=True
+#   )
+
+#   print(report)
+
+# except easypost.errors.api.api_error.ApiError as e:
+#   print("   ")
+#   print(e.http_body)
+#   print("   ")

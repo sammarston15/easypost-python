@@ -1,29 +1,46 @@
-import easypost
-import os
-from dotenv import load_dotenv
-
-# LOAD ENVIRONMENT VARIABLES
-load_dotenv()
-
-# SET TEST AND PROD API KEY
-test_key = os.getenv('test_key')
-prod_key = os.getenv('prod_key')
+import easypost # easypost python client library
+import os # allows for access of environment variables in .env file
+import json # allows for reading of JSON from misc.JSON file
+from prettytable import PrettyTable # allows for formatted table printing in the console
+from uuid import uuid4 # use this to generate a random and unique identifier
+import dad_tool # Justin Hammond's Dummy Address Data
+# import random
 
 
-# USE TEST OR PROD API KEY
-# easypost.api_key = test_key
-easypost.api_key = prod_key
+""" SET TEST AND PROD API KEY """
+test_key = os.getenv('TEST_KEY')
+personal_test_key = os.getenv('PERSONAL_TEST_KEY')
+prod_key = os.getenv('PROD_KEY')
 
-ca = easypost.CarrierAccount.create(
-    type="UspsAccount",
-    description="not real usps account",
-    reference="",
-    credentials={
-        "company_name": "python client",
-        "address_street": "525 S 850 E",
-        "address_city": "Lehi",
-        "address_state": "UT",
-        "address_zip": "84043",
-        "phone": "3858675309"
-    }
-)
+
+""" set client with TEST OR PROD api key """
+# client = easypost.EasyPostClient(personal_test_key)
+# client = easypost.EasyPostClient(test_key)
+client = easypost.EasyPostClient(prod_key)
+
+
+""" add carrier account to EP """
+try:
+    carrier_account = client.carrier_account.create(
+        type="DhlEcsAccount",
+        description="CA Location DHL eCommerce Solutions Account",
+        credentials={
+            "client_id": "123456",
+            "client_secret": "123abc",
+            "distribution_center": "USLAX1",
+            "pickup_id": "123456",
+        },
+        test_credentials={
+            "client_id": "123456",
+            "client_secret": "123abc",
+            "distribution_center": "USLAX1",
+            "pickup_id": "123456",
+        },
+    )
+
+    print(carrier_account)
+
+except easypost.errors.api.api_error.ApiError as e:
+    print("   ")
+    print(e.http_body)
+    print("   ")

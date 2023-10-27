@@ -19,11 +19,16 @@ client = easypost.EasyPostClient(test_key)
 # client = easypost.EasyPostClient(prod_key)
 
 
-""" create webhook """
+""" scanform list of shipments directly """
 try:
-    webhook = client.webhook.create(url="example.com")
+    scan_form = client.scan_form.create(
+        shipments=[
+            {"id": "shp_..."},
+            {"id": "shp_..."},
+        ]
+    )
 
-    print(webhook)
+    print(scan_form)
 
 except easypost.errors.api.api_error.ApiError as e:
     print("   ")

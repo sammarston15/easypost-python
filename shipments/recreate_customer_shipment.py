@@ -1,17 +1,22 @@
-import easypost
-import os
-import json
-# import dad_tool
+import easypost # easypost python client library
+import os # allows for access of environment variables in .env file
+import json # allows for reading of JSON from misc.JSON file
+from prettytable import PrettyTable # allows for formatted table printing in the console
+from uuid import uuid4 # use this to generate a random and unique identifier
+# import dad_tool # Justin Hammond's Dummy Address Data
 
 
 """ LOAD TEST AND PROD API KEY """
 test_key = os.getenv('TEST_KEY')
 prod_key = os.getenv('PROD_KEY')
+personal_test_key = os.getenv('PERSONAL_TEST_KEY')
 
 
-""" SET TEST OR PROD API KEY """
-easypost.api_key = test_key
-# easypost.api_key = prod_key 
+""" SET API KEY """
+# client = easypost.EasyPostClient(personal_test_key)
+client = easypost.EasyPostClient(test_key)
+# client = easypost.EasyPostClient(prod_key)
+
 
 
 """ open misc.JSON file """
@@ -76,8 +81,8 @@ with open((os.path.join(os.getcwd(),'misc.JSON')), 'r') as f:
     del ship['postage_label']
   if ship['tracker']:
     del ship['tracker']
-  if ship['selected_rate']:
-    del ship['selected_rate']
+  # if ship['selected_rate']:
+  #   del ship['selected_rate']
   if ship['scan_form']:
     del ship['scan_form']
   if ship['refund_status']:
@@ -103,35 +108,192 @@ with open((os.path.join(os.getcwd(),'misc.JSON')), 'r') as f:
 
   """ any additional adjustments """
   # ship['options']['dropoff_max_datetime'] = "2022-03-27 10:30:00"
-  # ship['options']['label_size'] = "7x3"
+  # ship['options']['label_size'] = "4x6"
+  # ship['options']['label_format'] = "PDF"
+  # ship['options']['label_resolution'] = "203"
   # ship['options']['label_date'] = "2022-02-28"
-  # ship['options']['incoterm'] = "DDU"
-  # ship['to_address']['company'] = None
-  # ship['from_address']['company'] = "EasyPost"
+  # ship['options']['incoterm'] = "DDP"
+  # ship['options']['currency'] = "CAD"
+  # ship['options']['billing_account_number'] = "123456789"
+  # ship['options']['payment'] = {
+  #   "type": "THIRD_PARTY",
+  #   "account": "123456789",
+  #   "country": "US",
+  #   "postal_code": "84043"
+  # }
+  # ship['options']['duty_payment_account'] = "123456789"
+  # ship['options']['duty_payment'] = {
+  #   "type": "RECEIVER",
+  #   "account": "123456789",
+  #   "country": "US",
+  #   "postal_code": "84043"
+  # }
+  # ship['options']['print_custom_1'] = "print_custom_1"
+  # ship['options']['print_custom_1_code'] = "TN"
+  # ship['options']['print_custom_2'] = "print_custom_2"
+  # ship['options']['saturday_delivery'] = True
+  # ship['options']['machinable'] = True
+  # ship['options']['commercial_invoice_format'] = "PNG"
+  # ship['options']['import_federal_tax_id'] = "123412341234"
+  # ship['options']['tax_id_expiration_date'] = "2022-12-21 10:30:00"
+  # ship['to_address']['name'] = None
+  # ship['buyer_address']['company'] = "Example Buyer Address"
+  # ship['buyer_address']['name'] = "Example Buyer Address"
+  # ship['buyer_address']['federal_tax_id'] = "123456789"
   # address1 = dad_tool.random_address('US_UT')
-  # ship['parcel']['predefined_package'] = "Letter"
+  # ship['parcel']['predefined_package'] = None
+  # ship['to_address']['street1'] = ship['to_address']['company']
+  # ship['customs_info']['contents_type'] = "documents"
+  # ship['options']['print_custom'] = [
+  #   {
+  #     "name": "print_custom_1",
+  #     "value": "Printed Label Field 1",
+  #     "barcode": "false"
+  #   },
+  #   {
+  #     "name": "print_custom_2",
+  #     "value": "Printed Label Field 2",
+  #     "barcode": "false"
+  #   },
+  # ]
+  
 
-  """ Set shipment object """
-  shipment = easypost.Shipment.create(
-    to_address=ship['to_address'],
-    from_address=ship['from_address'],
-    parcel=ship['parcel'],
-    customs_info=ship['customs_info'],
-    options=ship['options'],
-    is_return=ship['is_return'],
-    carrier_accounts=[os.getenv('USPS')]
-  )
 
-""" Buy Shipment """
-# shipment.buy(rate=shipment.lowest_rate(carriers=['USPS'], services=['First']))
-shipment.buy(rate=shipment.lowest_rate())
+  """ create unique reference ID """
+  reference_id = str(uuid4())[:12]
+
+  
+  try:
+    print("     ")
+    print("attempting to create shipment...")
+    print("     ")
+    print("     ")
+    print("     ")
+
+    """ Create/Rate Shipment """
+    shipment = client.shipment.create(
+      is_return=ship.get('is_return', False),
+      to_address=ship['to_address'],
+      from_address=ship['from_address'],
+      # return_address=ship['return_address'],
+      # buyer_address=ship['buyer_address'],
+      parcel=ship['parcel'],
+      customs_info=ship.get('customs_info', None),
+      options=ship['options'],
+      carrier_accounts=[os.getenv("USPS")],
+      reference=reference_id,
+      tax_identifiers=ship.get('tax_identifiers', None)
+    )
+
+    """ Print entire shipment JSON """
+    print(shipment)
+    print("     ")
+    print("     ")
 
 
-""" Print shipment """
-print(shipment)
+    """ Print only shipment ID """
+    print(shipment['id'])
+    print("     ")
+    print("     ")
 
-# for rate in shipment['rates']:
-#   print({
-#     "service": rate['service'],
-#     "rate": rate['rate']
-#   })
+
+    """ Print rate_errors if they come back """
+    if shipment['messages'] != []:
+      # error_table = PrettyTable(field_names=['carrier', 'carrier_account_id', 'type', 'message'])
+      # for error in shipment['messages']:
+      #   error_table.add_row([error['carrier'], error.get('carrier_account_id', ''), error['type'], error['message']])
+      # print(error_table)
+      # print("     ")
+      # print("     ")
+      # print("     ")
+
+      print("=====RATING ERRORS===== ")
+      display = []
+      for error in shipment['messages']:
+        display_error = {
+          "carrier": error.get('carrier', ''),
+          "carrier_account_id": error.get('carrier_account_id', ''),
+          "type": error.get('type', ''),
+          "message": error.get('message', ''),
+        }
+        display.append(display_error)
+      print(json.dumps(display, indent=4))
+      print("   ")
+
+    else:
+      pass
+
+
+    """ Print table in console with rates that came back """
+    if shipment['rates'] != []:
+      print("=====AVAILABLE RATES===== ")
+      rate_table = PrettyTable(field_names=['Carrier', 'Service', 'Rate'])
+      for rate in shipment['rates']:
+        rate_table.add_row([rate['carrier'], rate['service'], rate['rate']])
+      print(rate_table)
+      print("     ")
+      print("     ")
+      print("     ")
+
+
+
+
+      """ Buy Shipment if rates are returned """
+      try:
+        print('attempting to purchase shipment...')
+        print("     ")
+        print("     ")
+        print("     ")
+
+        bought_shipment = client.shipment.buy(
+          shipment['id'],
+          rate=shipment.lowest_rate(),
+          # rate=shipment.lowest_rate(['USPS'], ['PriorityMailInternational']),
+          # insurance=249.99,
+        )
+
+        # print shipment if buy is successful
+        print(bought_shipment)
+        print("     ")
+        print("==============================")
+        print("     ")
+        print("shipment: ", bought_shipment['id'])
+        print("     ")
+        print("label:", bought_shipment['postage_label'].get('label_url', 'no label URL...') if bought_shipment['postage_label'] else 'no postage label object...')
+        print("     ")
+        print("     ")
+
+
+      # except easypost.errors.general.easypost_error.EasyPostError as e:
+      #   print("ERROR PURCHASING SHIPMENT:")
+      #   print(e.message)
+      #   print("       ")
+      #   print("       ")
+      
+
+      # catch raw API errors
+      except easypost.errors.api.api_error.ApiError as e:
+        print(e.http_body)
+
+      # catch general exceptions
+      except Exception as e:
+        print(e)
+
+    else:
+      print('no rates came back...')
+      print(shipment['rates'])
+    
+  # catch raw API error response  
+  except easypost.errors.api.api_error.ApiError as e:
+    print("ERROR FETCHING RATES:")
+    print(e.http_body)
+    print("       ")
+
+
+
+
+
+
+    
+
+

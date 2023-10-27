@@ -15,15 +15,22 @@ prod_key = os.getenv('PROD_KEY')
 
 """ set client with TEST OR PROD api key """
 # client = easypost.EasyPostClient(personal_test_key)
-client = easypost.EasyPostClient(test_key)
-# client = easypost.EasyPostClient(prod_key)
+# client = easypost.EasyPostClient(test_key)
+client = easypost.EasyPostClient(prod_key)
 
 
-""" create webhook """
 try:
-    webhook = client.webhook.create(url="example.com")
 
-    print(webhook)
+    # Request all metadata for all carriers
+    carrier_metadata = client.carrier_metadata.retrieve()
+
+    # Request specific metadata for specific carriers
+    carrier_metadata = client.carrier_metadata.retrieve(
+        carriers=["usps"],
+        types=["service_levels", "predefined_packages"],
+    )
+
+    print(carrier_metadata)
 
 except easypost.errors.api.api_error.ApiError as e:
     print("   ")

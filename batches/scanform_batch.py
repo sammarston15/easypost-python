@@ -19,11 +19,13 @@ client = easypost.EasyPostClient(test_key)
 # client = easypost.EasyPostClient(prod_key)
 
 
-""" create webhook """
+""" scanform a batch """
 try:
-    webhook = client.webhook.create(url="example.com")
+    batch = client.batch.retrieve("batch_...")
 
-    print(webhook)
+    batch_with_scan_form = client.batch.create_scan_form(batch.id)
+
+    print(batch_with_scan_form)
 
 except easypost.errors.api.api_error.ApiError as e:
     print("   ")

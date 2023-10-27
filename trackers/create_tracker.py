@@ -1,33 +1,45 @@
-""" 
-Carrier string representations for Trackers can be found at https://www.easypost.com/docs/api#carrier-tracking-strings
-
-test_tracking_info.JSON updated as of 8/13/2021
-
-"""
-
-import easypost
-import os
-import json
+import easypost # easypost python client library
+import os # allows for access of environment variables in .env file
+import json # allows for reading of JSON from misc.JSON file
+from prettytable import PrettyTable # allows for formatted table printing in the console
+from uuid import uuid4 # use this to generate a random and unique identifier
+import dad_tool # Justin Hammond's Dummy Address Data
+# import random
 
 
-""" LOAD TEST AND PROD API KEY """
-test_key = os.getenv('test_key')
-prod_key = os.getenv('prod_key')
+""" SET TEST AND PROD API KEY """
+test_key = os.getenv('TEST_KEY')
+personal_test_key = os.getenv('PERSONAL_TEST_KEY')
+prod_key = os.getenv('PROD_KEY')
 
 
-""" SET TEST OR PROD API KEY """
-# easypost.api_key = test_key
-easypost.api_key = prod_key
+""" set client with TEST OR PROD api key """
+# client = easypost.EasyPostClient(personal_test_key)
+# client = easypost.EasyPostClient(test_key)
+client = easypost.EasyPostClient(prod_key)
 
-""" open the tracking info file - NOTE: os.getcwd() will give you a string of the path to the workspace folder, not the folder that the file is in necessarily. See below how I added the trackers folder path in the file name. """
-with open(os.path.join(os.getcwd(), 'trackers/test_tracking_info.JSON'), 'r') as f:
-  tracking_info = json.load(f)
 
-  tracker = easypost.Tracker.create(
-    carrier=tracking_info['carriers'][2]['carrier_str'],
-    tracking_code="AXL9530636",
-    # carrier="FedEx"
+test_tracking_codes = {
+  "pre_transit": "EZ1000000001",
+  "in_transit": "EZ2000000002",
+  "out_for_delivery": "EZ3000000003",
+  "delivered": "EZ4000000004",
+  "return_to_sender": "EZ5000000005",
+  "failure": "EZ6000000006",
+  "unknown": "EZ7000000007"
+}
+
+""" create a tracker """
+try:
+  tracker = client.tracker.create(
+    # tracking_code=test_tracking_codes['out_for_delivery'],
+    tracking_code="EZ1000000001",
+    carrier="USPS",
   )
 
   print(tracker)
 
+except easypost.errors.api.api_error.ApiError as e:
+  print("   ")
+  print(e.http_body)
+  print("   ")

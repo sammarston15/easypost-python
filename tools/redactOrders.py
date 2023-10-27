@@ -1,6 +1,6 @@
 """ This app will open the order.json file, delete the internal information, and then copy it to your computer's clipboard.
 """
-
+import os
 import json
 import pyperclip
 
@@ -30,7 +30,9 @@ def delete_pii(order):
 
 
 def open_file():
-    with open('/Users/smarston/Documents/supporttools/python/redactPII/order.json', 'r') as f:
+
+    with open(os.path.join(os.getcwd(), 'misc.JSON'), 'r') as f:
+        # convert JSON to Python "Dictionary"
         order_json = json.load(f)
     return order_json
 

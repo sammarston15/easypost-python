@@ -15,15 +15,16 @@ prod_key = os.getenv('PROD_KEY')
 
 """ set client with TEST OR PROD api key """
 # client = easypost.EasyPostClient(personal_test_key)
-client = easypost.EasyPostClient(test_key)
-# client = easypost.EasyPostClient(prod_key)
+# client = easypost.EasyPostClient(test_key)
+client = easypost.EasyPostClient(prod_key)
 
 
-""" create webhook """
+
+""" list all of your carrier accounts """
 try:
-    webhook = client.webhook.create(url="example.com")
+    carrier_accounts = client.carrier_account.all()
 
-    print(webhook)
+    print(carrier_accounts)
 
 except easypost.errors.api.api_error.ApiError as e:
     print("   ")

@@ -1,79 +1,91 @@
-import easypost
-import os
-from dotenv import load_dotenv
-
-# LOAD ENVIRONMENT VARIABLES
-load_dotenv()
-
-# SET TEST AND PROD API KEY
-test_key = os.getenv('test_key')
-prod_key = os.getenv('prod_key')
+import easypost # easypost python client library
+import os # allows for access of environment variables in .env file
+import json # allows for reading of JSON from misc.JSON file
+from prettytable import PrettyTable # allows for formatted table printing in the console
+from uuid import uuid4 # use this to generate a random and unique identifier
+import dad_tool # Justin Hammond's Dummy Address Data
+# import random
 
 
-# USE TEST OR PROD API KEY
-easypost.api_key = test_key
-# easypost.api_key = prod_key
+""" SET TEST AND PROD API KEY """
+test_key = os.getenv('TEST_KEY')
+personal_test_key = os.getenv('PERSONAL_TEST_KEY')
+prod_key = os.getenv('PROD_KEY')
+
+
+""" set client with TEST OR PROD api key """
+# client = easypost.EasyPostClient(personal_test_key)
+client = easypost.EasyPostClient(test_key)
+# client = easypost.EasyPostClient(prod_key)
 
 
 """ Create to_address """
-try:
-    to_address = easypost.Address.create(
-        street1="417 Montgomery Street",
-        street2="FLOOR 5",
-        city="San Francisco",
-        state="CA",
-        zip="94104",
-        country="US",
-        company="EasyPost",
-        phone="415-456-7890"
-    )
-except easypost.Error as e:
-    print(e.http_body)
-
+to_address = {
+    "street1":"417 Montgomery Street",
+    "street2":"FLOOR 5",
+    "city":"San Francisco",
+    "state":"CA",
+    "zip":"94104",
+    "country":"US",
+    "company":"EasyPost",
+    "phone":"415-456-7890"
+}
 
 """ Create from_address """
-try:
-    from_address = easypost.Address.create(
-        name = "Dr. Steve Brule",
-        street1 = "179 N Harbor Dr",
-        street2 = "Redondo Beach",
-        city = "San Francisco",
-        state = "CA",
-        zip = "90277",
-        country = "US",
-        phone = "310-808-5243"
-    )
-except easypost.Error as e:
-    print(e.http_body)
+from_address = {
+    "name":"Dr. Steve Brule",
+    "street1":"179 N Harbor Dr",
+    "street2":"Redondo Beach",
+    "city":"San Francisco",
+    "state":"CA",
+    "zip":"90277",
+    "country":"US",
+    "phone":"310-808-5243"
+}
 
 
 """ Create order """
 try: 
-    order = easypost.Order.create(
-        to_address=to_address,
-        from_address=from_address,
+    order = client.order.create(
+        to_address={"id": "adr_..."},
+        from_address={"id": "adr_..."},
         shipments=[
             {
                 "parcel": {
-                    "weight": 10.2
-                },
-                "options": {"label_format":"PDF"}
+                    "predefined_package": "FedExBox",
+                    "weight": 10.2,
+                }
             },
             {
                 "parcel": {
-                    "weight": 17.5
-                },
-                "options": {"label_format":"PDF"}
-            }
-        ]
+                    "predefined_package": "FedExBox",
+                    "weight": 17.5,
+                }
+            },
+        ],
+        carrier_accounts=[os.getenv('USPS')],
+        reference=str(uuid4())[:12]
     )
-except easypost.Error as e:
-    print(e.http_body)
 
-
-""" Buy order """
-try:
-    order.buy(carrier="FedEx", service="FEDEX_2_DAY")
     print(order)
-except easypost.Error as e:
+
+except easypost.errors.api.api_error.ApiError as e:
+    print("   ")
     print(e.http_body)
+    print("   ")
+
+
+""" buy order """
+# try:
+#     bought_order = client.order.buy(
+#         order.id,
+#         carrier="FedEx",
+#         service="FEDEX_GROUND",
+#     )
+
+#     print(order)
+
+# except easypost.errors.api.api_error.ApiError as e:
+#     print("   ")
+#     print(e.http_body)
+#     print("   ")
