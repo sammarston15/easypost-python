@@ -4,7 +4,7 @@
         "from_address": ...,
         "parcel": ...,
         "options": {
-          "label_format": "ZPL",
+          "label_format": "PNG",
           "label_size": "4x6"
         }
     }
